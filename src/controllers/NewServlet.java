@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 
 import javax.persistence.EntityManager;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -31,7 +32,16 @@ public class NewServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        EntityManager em = DBUtil.createEntityManager();
+    	// CSRF対策
+        request.setAttribute("_token", request.getSession().getId());
+     // おまじないとしてのインスタンスを生成
+        request.setAttribute("task", new Task());
+
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/new.jsp");
+        rd.forward(request, response);
+
+
+    	EntityManager em = DBUtil.createEntityManager();
         em.getTransaction().begin();
 
         // Messageのインスタンスを生成
